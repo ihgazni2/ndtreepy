@@ -273,7 +273,7 @@ def leafize(nd):
     nd['_fstch'] = None
     return(nd)
 
-def rootize(nd) {
+def rootize(nd):
     nd['_lsib'] = None
     nd['_rsib'] = None
     nd['_parent'] = None
