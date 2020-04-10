@@ -210,7 +210,7 @@ def get_ances(tree,nd,including_self=False):
 
 def get_depth(tree,nd):
     ances = get_ances(tree,nd,including_self=True)
-    return(ances.length - 1)
+    return(len(ances) - 1)
 
 
 ####
