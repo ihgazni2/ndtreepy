@@ -265,7 +265,7 @@ def update_orig_nodes(tree,nsdfs):
     for nd in nsdfs:
         _id = nd['_id']
         nnodes[_id] = nd
-        delete nodes[_id]
+        del nodes[_id]
     return(nnodes)  
 
 
