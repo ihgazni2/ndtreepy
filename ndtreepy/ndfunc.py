@@ -140,6 +140,9 @@ def get_rsib(tree,nd):
     return(rsib)
 
 
+
+
+
 def get_lstsib(tree,nd,including_self=False):
     lstrsib = nd
     rsib = get_rsib(tree,nd)
@@ -166,9 +169,18 @@ def get_sibs(tree,nd,including_self=False):
         sibs = elel.filter(sibs,lambda sib:sib["_id"]!=nd["_id"])
     return(sibs) 
 
+def get_sibseq(tree,nd):
+    sibs = get_sibs(tree,nd,including_self=True)
+    seq = elel.cond_select_indexes_all(sibs,cond_func=lambda sib:sib==nd)
+    return(seq)
 
 
-
+def get_lsib(tree,nd):
+    seq = get_sibseq(tree,nd)
+    if(seq == 0):
+        return(None)
+    else:
+        return(sibs[seq-1])
 
 #####
 def get_parent(tree,nd):
