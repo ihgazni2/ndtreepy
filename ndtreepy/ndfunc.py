@@ -166,6 +166,10 @@ def get_sibs(tree,nd,including_self=False):
         sibs = elel.filter(sibs,lambda sib:sib["_id"]!=nd["_id"])
     return(sibs) 
 
+
+
+
+
 #####
 def get_parent(tree,nd):
     cond = is_root(nd)
@@ -188,4 +192,140 @@ def get_root(tree):
         lst_parent = parent
         parent = get_parent(tree,parent)
     return(lst_parent)    
+
+
+def get_ances(tree,nd,including_self=False):
+    ances = []
+    parent = get_parent(tree,nd)
+    while(parent != None):
+        ances.append(parent)
+        parent = get_parent(tree,parent)
+    if(including_self):
+        ances.remove(nd)
+    else:
+        pass
+    return(ances)
+
+####
+
+def get_depth(tree,nd):
+    ances = get_ances(tree,nd,including_self=True)
+    return(ances.length - 1)
+
+
+####
+
+def get_rsib_of_fst_ance_having_rsib(tree,nd):
+    parent = get_parent(tree,nd)
+    while(parent != None):
+        rsib = get_rsib(tree,parent)
+        if(rsib != None):
+            return(rsib)
+        else:
+            parent = get_parent(tree,nd)
+    return(None) 
+
+
+def get_sdfs_next(tree,nd):
+    fstch = get_fstch(tree,nd)
+    if(fstch != None):
+        return(fstch)
+    else:
+        rsib = get_rsib(tree,nd)
+        if(rsib != None):
+            return(rsib)
+        else:
+            return(get_rsib_of_fst_ance_having_rsib(tree,nd))
+
+
+def get_sdfs(tree,nd):
+    nd_depth = get_depth(tree,nd)
+    sdfs = []
+    while(nd != None):
+        sdfs.append(nd)
+        nd = get_sdfs_next(tree,nd)
+        if(nd != None):
+            depth = get_depth(tree,nd)
+            if(depth < nd_depth):
+                break
+    return(sdfs)        
+
+####
+
+def update_disconnected_nodes(tree,nd):
+    nsdfs = get_sdfs(tree,nd)
+    treeid = nsdfs[0]['_id']
+    for nd in nsdfs:
+        nd['_tree'] = treeid
+    return(nsdfs)
+
+
+def update_orig_nodes(tree,nsdfs):
+    nnodes = {}
+    for nd in nsdfs:
+        _id = nd['_id']
+        nnodes[_id] = nd
+        delete nodes[_id]
+    return(nnodes)  
+
+
+def leafize(nd):
+    nd['_fstch'] = None
+    return(nd)
+
+def rootize(nd) {
+    nd['_lsib'] = None
+    nd['_rsib'] = None
+    nd['_parent'] = None
+    return(nd)
+
+def sdfs2tree(sdfs):
+    tree = {}
+    for nd in sdfs:
+        tree[nd['_id']] = nd
+    return(tree)    
+
+
+def disconnect(tree,nd):
+    cond = is_root(nd)
+    if(cond):
+        return([nd,{},tree])
+    elif(is_lonely(tree,nd)):
+        parent =  tree[nd['_parent']]
+        leafize(parent);
+        nsdfs = update_disconnected_nodes(tree,nd)
+        new_tree = sdfs2tree(nsdfs) 
+        old_tree = update_orig_nodes(tree,nsdfs)
+        rootize(nd)
+        return([nd,new_tree,old_tree])         
+    else:
+        if(is_fstch(nd)):
+            rsib = get_rsib(tree,nd)
+            rsib['_lsib'] = None
+            parent = get_parent(tree,nd) 
+            parent['_fstch'] = nd['_rsib']  
+            nsdfs = update_disconnected_nodes(tree,nd)
+            new_tree = sdfs2tree(nsdfs)
+            old_tree = update_orig_nodes(tree,nsdfs)
+            rootize(nd)
+            return([nd,new_tree,old_tree])
+        elif(is_lstch(nd)): 
+            lsib = get_lsib(tree,nd) 
+            lsib['_rsib'] = nd['_rsib']
+            lsib['_parent'] = nd['_parent']
+            nsdfs = update_disconnected_nodes(tree,nd) 
+            new_tree = sdfs2tree(nsdfs)
+            old_tree = update_orig_nodes(tree,nsdfs)
+            rootize(nd)
+            return([nd,new_tree,old_tree])
+        else:
+            lsib = get_lsib(tree,nd) 
+            lsib['_rsib'] = nd['_rsib']
+            nsdfs = update_disconnected_nodes(tree,nd)
+            new_tree = sdfs2tree(nsdfs)
+            old_tree = update_orig_nodes(tree,nsdfs)
+            rootize(nd)
+            return([nd,new_tree,old_tree])
+
+
 
