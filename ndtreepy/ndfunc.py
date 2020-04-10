@@ -222,7 +222,7 @@ def get_rsib_of_fst_ance_having_rsib(tree,nd):
         if(rsib != None):
             return(rsib)
         else:
-            parent = get_parent(tree,nd)
+            parent = get_parent(tree,parent)
     return(None) 
 
 
