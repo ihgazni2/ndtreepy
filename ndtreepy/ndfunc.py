@@ -201,7 +201,7 @@ def get_ances(tree,nd,including_self=False):
         ances.append(parent)
         parent = get_parent(tree,parent)
     if(including_self):
-        ances.remove(nd)
+        ances = [nd] + ances
     else:
         pass
     return(ances)
@@ -248,7 +248,13 @@ def get_sdfs(tree,nd):
             depth = get_depth(tree,nd)
             if(depth < nd_depth):
                 break
-    return(sdfs)        
+    return(sdfs)   
+
+
+def tree2sdfs(tree):
+    root = get_root(tree)
+    sdfs = get_sdfs(tree,root)
+    return(sdfs)
 
 ####
 
