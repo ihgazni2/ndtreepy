@@ -48,28 +48,31 @@ def creat_nd(tree,*args):
 
 
 ###
+
+
+
 def is_inited(nd):
-    cond = (nd["_tree"] >=0)
+    cond = ("_tree" in nd) and (nd["_tree"] >=0)
     return(cond)
 
 def is_root(nd):
-    cond0 = (nd["_tree"] == nd["_id"])
+    cond0 = ("_tree" in nd) and (nd["_tree"] == nd["_id"])
     cond1 = is_inited(nd)
     return(cond0 and cond1)
 
 
 def is_fstch(nd):
-    cond = (nd["_lsib"] == None)
+    cond = ("_lsib" in nd) and (nd["_lsib"] == None)
     return(cond)
 
 
 def is_lstch(nd):
-    cond = (nd["_rsib"] == None)
+    cond = ("_rsib" in nd) and (nd["_rsib"] == None)
     return(cond)
 
 
 def is_leaf(nd):
-    cond = (nd["_fstch"] == None)
+    cond = ("_fstch" in nd) and (nd["_fstch"] == None)
     return(cond)
 
 
@@ -365,4 +368,21 @@ def load(fn):
     return(ntree)
 
 
+###
+
+
+def get_nds_via_attr(tree,attr,val):
+    nds = []
+    for _id in tree:
+        nd = tree[_id]
+        cond = (attr in nd)
+        if(cond):
+            v = nd[attr]
+            if(v == val):
+                nds.append(nd)
+            else:
+                pass        
+        else:
+            pass
+    return(nds)
 ###

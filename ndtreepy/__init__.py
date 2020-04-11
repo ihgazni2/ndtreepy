@@ -1,1 +1,1 @@
-__all__=["ndfunc"]
+__all__=["ndfunc","ndfuncterm"]
