@@ -1,6 +1,8 @@
 import efuntool.efuntool as eftl
 import elist.elist as elel
 from efdir import fs
+import ndtreepy.cmmn as cmmn
+
 
 
 def calc_next_id(tree):
@@ -24,6 +26,7 @@ def creat_root(*args):
             "_parent":None,
             "_tree":_id
         }
+        r["_guid"] = cmmn.gen_guid()
         return(r)
 
 def creat_tree(*args):
@@ -44,6 +47,7 @@ def creat_nd(tree,*args):
             "_id":_id,
             "_fstch":None,
         }
+        nd["_guid"] = cmmn.gen_guid()
     return(nd)
 
 
@@ -279,12 +283,12 @@ def update_disconnected_nodes(tree,nd):
 
 
 def update_orig_nodes(tree,nsdfs):
-    nnodes = {}
+    ntree = {}
     for nd in nsdfs:
         _id = nd['_id']
-        nnodes[_id] = nd
-        del nodes[_id]
-    return(nnodes)  
+        ntree[_id] = nd
+        del tree[_id]
+    return([ntree,tree])  
 
 
 def leafize(nd):
@@ -312,8 +316,7 @@ def disconnect(tree,nd):
         parent =  tree[nd['_parent']]
         leafize(parent);
         nsdfs = update_disconnected_nodes(tree,nd)
-        new_tree = sdfs2tree(nsdfs) 
-        old_tree = update_orig_nodes(tree,nsdfs)
+        new_tree,old_tree = update_orig_nodes(tree,nsdfs)
         rootize(nd)
         return([nd,new_tree,old_tree])         
     else:
@@ -323,8 +326,7 @@ def disconnect(tree,nd):
             parent = get_parent(tree,nd) 
             parent['_fstch'] = nd['_rsib']  
             nsdfs = update_disconnected_nodes(tree,nd)
-            new_tree = sdfs2tree(nsdfs)
-            old_tree = update_orig_nodes(tree,nsdfs)
+            new_tree,old_tree = update_orig_nodes(tree,nsdfs)
             rootize(nd)
             return([nd,new_tree,old_tree])
         elif(is_lstch(nd)): 
@@ -332,16 +334,14 @@ def disconnect(tree,nd):
             lsib['_rsib'] = nd['_rsib']
             lsib['_parent'] = nd['_parent']
             nsdfs = update_disconnected_nodes(tree,nd) 
-            new_tree = sdfs2tree(nsdfs)
-            old_tree = update_orig_nodes(tree,nsdfs)
+            new_tree,old_tree = update_orig_nodes(tree,nsdfs)
             rootize(nd)
             return([nd,new_tree,old_tree])
         else:
             lsib = get_lsib(tree,nd) 
             lsib['_rsib'] = nd['_rsib']
             nsdfs = update_disconnected_nodes(tree,nd)
-            new_tree = sdfs2tree(nsdfs)
-            old_tree = update_orig_nodes(tree,nsdfs)
+            new_tree,old_tree = update_orig_nodes(tree,nsdfs)
             rootize(nd)
             return([nd,new_tree,old_tree])
 
@@ -352,7 +352,7 @@ def disconnect(tree,nd):
 def dump(tree):
     return(json.dumps(tree))
 
-def write(tree,attr):
+def dump2file(tree,attr):
     root = ndnd.get_root(tree)
     fs.wjson(root[attr]+'.json',tree)
 
