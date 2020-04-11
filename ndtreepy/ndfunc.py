@@ -43,10 +43,6 @@ def creat_nd(tree,*args):
         nd =  {
             "_id":_id,
             "_fstch":None,
-            "_lsib":-1,
-            "_rsib":-1,
-            "_parent":-1,
-            "_tree":-1
         }
     return(nd)
 
@@ -99,7 +95,7 @@ def append_child(tree,nd,*args):
         child["_lsib"] = None
     else:    
         old_lstch = get_lstch(tree,nd)
-        old_lstch["_parent"] = -1
+        del old_lstch["_parent"] 
         old_lstch["_rsib"] = child["_id"]
     child["_parent"]  = nd["_id"] 
     tree[child["_id"]] = child
@@ -171,12 +167,13 @@ def get_sibs(tree,nd,including_self=False):
 
 def get_sibseq(tree,nd):
     sibs = get_sibs(tree,nd,including_self=True)
-    seq = elel.cond_select_indexes_all(sibs,cond_func=lambda sib:sib==nd)
+    seq = elel.cond_select_indexes_all(sibs,cond_func=lambda sib:sib==nd)[0]
     return(seq)
 
 
 def get_lsib(tree,nd):
-    seq = get_sibseq(tree,nd)
+    sibs = get_sibs(tree,nd,including_self=True)
+    seq = elel.cond_select_indexes_all(sibs,cond_func=lambda sib:sib==nd)[0]
     if(seq == 0):
         return(None)
     else:
