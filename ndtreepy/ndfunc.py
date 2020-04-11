@@ -1,6 +1,6 @@
 import efuntool.efuntool as eftl
 import elist.elist as elel
-
+from efdir import fs
 
 
 def calc_next_id(tree):
@@ -344,3 +344,25 @@ def disconnect(tree,nd):
 
 
 
+
+###
+def dump(tree):
+    return(json.dumps(tree))
+
+def write(tree,attr):
+    root = ndnd.get_root(tree)
+    fs.wjson(root[attr]+'.json',tree)
+
+def load(fn):
+    tree = {}
+    if(isinstance(fn,str)):
+        tree = fs.rjson(fn)
+    else:
+        tree = fn
+    ntree = {}
+    for k in tree:
+        ntree[int(k)] = tree[k]
+    return(ntree)
+
+
+###
